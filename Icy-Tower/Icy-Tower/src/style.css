@@ -2,7 +2,7 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-  background-image: url("./images/bricks.png");
+  background-image: url("../public/images/bricks.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -115,10 +115,33 @@ body {
   z-index: 10;
   display: flex;
   gap: 10px;
+  padding: 5px;
+  background-color: transparent; 
 }
 
-.game-button {
-  font-family: 'Press Start 2P', cursive;
-  font-size: 18px;
-  color: rgb(167, 166, 166);
+button {
+  font-family: "Press Start 2P", cursive; 
+  font-size: 32px;
+  color: transparent; 
+  background: none;
+  border: none; 
+  text-shadow: none;
+  -webkit-background-clip: text; 
+  background-clip: text; 
+  font-weight: bold;
+  background-image: linear-gradient(to bottom, grey, white); 
+  background-color: #000000 solid 1px;
+  cursor: pointer;
+  padding: 5px 10px; 
+  transition: transform 0.2s; 
 }
+
+button:hover {
+  transform: scale(1.1); 
+}
+
+button:active {
+  transform: scale(0.95); 
+}
+
+
