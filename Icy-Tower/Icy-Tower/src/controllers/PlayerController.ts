@@ -6,10 +6,10 @@ export class PlayerController {
     private model: Player;
     private view: PlayerView;
 
-    private readonly leftLimitVW = 8; 
-    private readonly rightLimitVW = 88; 
+    private readonly leftLimitVW = 8;
+    private readonly rightLimitVW = 88;
 
-    private currentStep: Step | null = null; // Track the step the player is currently on
+    private currentStep: Step | null = null;
 
     constructor(model: Player, view: PlayerView) {
         this.model = model;
@@ -18,7 +18,6 @@ export class PlayerController {
 
     initialize(mainElement: HTMLDivElement) {
         this.view.render(this.model, mainElement);
-
         document.addEventListener("keydown", (e) => this.handleKeydown(e));
     }
 
@@ -38,7 +37,6 @@ export class PlayerController {
 
     moveRight() {
         const newPositionX = this.model.position.x + 5;
-
         if (newPositionX <= this.rightLimitVW) {
             this.model.position = { x: newPositionX, y: this.model.position.y };
             this.view.updatePosition(this.model);
@@ -47,7 +45,6 @@ export class PlayerController {
 
     moveLeft() {
         const newPositionX = this.model.position.x - 5;
-
         if (newPositionX >= this.leftLimitVW) {
             this.model.position = { x: newPositionX, y: this.model.position.y };
             this.view.updatePosition(this.model);
@@ -55,23 +52,14 @@ export class PlayerController {
     }
 
     jump() {
-        if (!this.model.isPlayerJumping) {
+        if (!this.model.isPlayerJumping || this.model.velocity <= 0) {
             this.model.isPlayerJumping = true;
-            this.model.velocity = 15; 
+            this.model.velocity = 15;
             this.currentStep = null;
         }
     }
 
     update(steps: Step[], gameOverCallback: () => void) {
-        if (this.currentStep) {
-            this.model.position = {
-                x: this.model.position.x,
-                y: this.currentStep.position.y + this.currentStep.dimensions.height,
-            };
-            this.view.updatePosition(this.model);
-            return;
-        }
-
         if (this.model.isPlayerJumping) {
             const newY = this.model.position.y + this.model.velocity;
             const newVelocity = this.model.velocity - this.model.gravityForce;
@@ -102,6 +90,13 @@ export class PlayerController {
                 }
             }
 
+            this.view.updatePosition(this.model);
+        } else if (this.currentStep) {
+            // Stick the player to the current step
+            this.model.position = {
+                x: this.model.position.x,
+                y: this.currentStep.position.y + this.currentStep.dimensions.height
+            };
             this.view.updatePosition(this.model);
         }
     }

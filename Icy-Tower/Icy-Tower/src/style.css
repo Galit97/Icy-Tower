@@ -27,36 +27,6 @@ body {
   --border-radius: 20px;
 }
 
-@keyframes float {
-  0% {
-    transform: translateY(var(--initial-positionY, 0));
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-@keyframes moveDown {
-  0% {
-    top: var(--initial-positionY, 0);
-  }
-  100% {
-    top: 100vh;
-  }
-}
-
-@keyframes rotate360 {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.player.rotate {
-  animation: rotate360 1s ease-in-out;
-}
 
 .stepDesign {
   background-color: var(--base-color);
