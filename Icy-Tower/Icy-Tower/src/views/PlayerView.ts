@@ -12,7 +12,7 @@ export class PlayerView {
         playerElement.src = player.image;
         playerElement.style.position = "absolute";
         playerElement.style.bottom = `${player.position.y}px`;
-        playerElement.style.left = `${player.position.x}vw`; // Use viewport width (vw)
+        playerElement.style.left = `${player.position.x}vw`;
         playerElement.style.width = "5vw";
         playerElement.classList.add("player");
         mainElement.appendChild(playerElement);
@@ -20,8 +20,8 @@ export class PlayerView {
 
         playerElement.addEventListener("dblclick", () => {
             const newImage = player.image.includes("character1.png")
-                ? "../../public/images/character2.png"
-                : "../../public/images/character1.png";
+                ? "/images/character2.png"
+                : "/images/character1.png";
             player.image = newImage;
             this.updateImage(player);
         });
@@ -40,3 +40,5 @@ export class PlayerView {
         }
     }
 }
+
+

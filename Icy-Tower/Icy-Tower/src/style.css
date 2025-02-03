@@ -2,7 +2,7 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-  background-image: url("../public/images/bricks.png");
+  background-image: url("/images/bricks.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -66,7 +66,6 @@ body {
   width: var(--width, 200px);
   height: 60px;
   position: absolute;
-  animation: float 3s ease-in-out infinite, moveDown 10s linear forwards;
 
   box-shadow: 0 6px 8px var(--border-color), 0 2px 4px var(--border-color);
 
@@ -142,6 +141,44 @@ button:hover {
 
 button:active {
   transform: scale(0.95); 
+}
+
+
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+#game-over {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 20px;
+  text-align: center;
+  border-radius: 10px;
+  z-index: 1000;
+}
+
+#play-again {
+  background-color: #ffffff;
+  color: #333333;
+  padding: 10px 20px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#play-again:hover {
+  background-color: #dddddd;
 }
 
 

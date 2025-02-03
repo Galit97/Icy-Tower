@@ -55,30 +55,20 @@ export class PlayerController {
     }
 
     jump() {
-        // Allow jumping again after landing
         if (!this.model.isPlayerJumping) {
             this.model.isPlayerJumping = true;
-            this.model.velocity = 15; // Upward velocity for the jump
-            this.currentStep = null; // Detach from the step
+            this.model.velocity = 15; 
+            this.currentStep = null;
         }
     }
 
     update(steps: Step[], gameOverCallback: () => void) {
         if (this.currentStep) {
-            // Keep the player on the current step as it moves
             this.model.position = {
                 x: this.model.position.x,
                 y: this.currentStep.position.y + this.currentStep.dimensions.height,
             };
-
             this.view.updatePosition(this.model);
-
-            // Detach from the step if it moves out of bounds
-            if (this.currentStep.position.y > 520) {
-                this.currentStep = null;
-                this.model.isPlayerJumping = true; // Start falling
-            }
-
             return;
         }
 
@@ -95,16 +85,15 @@ export class PlayerController {
                     this.model.position.x + 5 >= step.position.x &&
                     this.model.position.x <= step.position.x + step.dimensions.width
                 ) {
-                    this.model.velocity = 0; // Stop falling
+                    this.model.velocity = 0;
                     this.model.position = { x: this.model.position.x, y: step.position.y + step.dimensions.height };
-                    this.model.isPlayerJumping = false; // Reset jump state
-                    this.currentStep = step; // Attach to the step
+                    this.model.isPlayerJumping = false;
+                    this.currentStep = step;
                     isLanded = true;
                 }
             });
 
             if (!isLanded) {
-                // If the player falls off
                 if (newY < -10) {
                     gameOverCallback();
                 } else {

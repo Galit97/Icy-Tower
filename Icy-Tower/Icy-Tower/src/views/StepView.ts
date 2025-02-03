@@ -1,5 +1,6 @@
 import { Step } from "../models/StepModel";
 
+
 export class StepView {
     public element: HTMLDivElement | null;
 
@@ -19,5 +20,12 @@ export class StepView {
 
         mainElement.appendChild(stepElement);
         this.element = stepElement;
+    }
+
+    updatePosition(step: Step) {
+        if (this.element) {
+            this.element.style.top = `${step.position.y}vh`;
+            this.element.style.left = `${step.position.x}vw`;
+        }
     }
 }
