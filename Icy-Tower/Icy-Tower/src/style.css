@@ -8,15 +8,13 @@ body {
   background-position: center;
   z-index: 0;
   font-family: 'Press Start 2P', cursive;
-
 }
 
 .player {
   width: 80px;
   height: auto;
-  z-index: 2;
+  z-index: 6;
 }
-
 
 :root {
   --base-color: #d7d3f1;
@@ -27,7 +25,6 @@ body {
   --border-radius: 20px;
 }
 
-
 .stepDesign {
   background-color: var(--base-color);
   border: 2px solid var(--border-color);
@@ -36,9 +33,7 @@ body {
   width: var(--width, 200px);
   height: 60px;
   position: absolute;
-
   box-shadow: 0 6px 8px var(--border-color), 0 2px 4px var(--border-color);
-
   background: linear-gradient(to bottom, var(--base-color) 0%, var(--shadow-color) 100%);
 }
 
@@ -61,31 +56,12 @@ body {
   border: none;
   margin-left: 10px;
 }
+
 #game-container {
   position: relative;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-}
-
-.player {
-  z-index: 2;
-}
-
-.stepDesign {
-  position: absolute;
-  background-color: #333;
-}
-
-#controls {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 10;
-  display: flex;
-  gap: 10px;
-  padding: 5px;
-  background-color: transparent; 
 }
 
 button {
@@ -112,7 +88,6 @@ button:hover {
 button:active {
   transform: scale(0.95); 
 }
-
 
 #overlay {
   position: fixed;

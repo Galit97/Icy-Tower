@@ -99,7 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 step.position = { x: step.position.x, y: step.position.y + 0.120 };
                 stepViews[index].updatePosition(step);
 
-                // Stick the player to the step
                 if (playerController['currentStep'] === step) {
                     player.position = { x: player.position.x, y: step.position.y + step.dimensions.height };
                     playerView.updatePosition(player);
