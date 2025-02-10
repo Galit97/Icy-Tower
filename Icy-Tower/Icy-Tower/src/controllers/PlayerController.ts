@@ -55,26 +55,25 @@ export class PlayerController {
         if (!this.model.isPlayerJumping) {
             this.model.isPlayerJumping = true;
             this.model.velocity = 15;
-            this.currentStep = null;
         }
     }
 
     update(steps: Step[], gameOverCallback: () => void) {
-        const newY = this.model.position.y + this.model.velocity;
+        let newY = this.model.position.y + this.model.velocity;
         const newVelocity = this.model.velocity - this.model.gravityForce;
 
         let isLanded = false;
 
         steps.forEach((step) => {
             if (
-                newY >= step.position.y + step.dimensions.height &&
-                newY <= step.position.y + step.dimensions.height + 5 &&
+                newY >= step.position.y &&
+                newY <= step.position.y + step.dimensions.height &&
                 this.model.position.x + 5 >= step.position.x &&
                 this.model.position.x <= step.position.x + step.dimensions.width &&
                 this.model.velocity <= 0
             ) {
                 this.model.velocity = 0;
-                this.model.position = { x: this.model.position.x, y: step.position.y + step.dimensions.height };
+                newY = step.position.y + step.dimensions.height;
                 this.model.isPlayerJumping = false;
                 this.currentStep = step;
                 isLanded = true;
@@ -82,34 +81,28 @@ export class PlayerController {
         });
 
         if (!isLanded) {
-            if (newY < -10 || newY > window.innerHeight) {
-                gameOverCallback();
+            if (newY <= 0) {
+                newY = 0;
+                this.model.velocity = 0;
+                this.model.isPlayerJumping = false;
             } else {
-                this.model.position = { x: this.model.position.x, y: newY };
                 this.model.velocity = newVelocity;
-
-                if (this.model.velocity <= 0) {
-                    this.model.isPlayerJumping = false;
-                    this.model.velocity = 0;
-                }
             }
         }
 
+        this.model.position = { x: this.model.position.x, y: newY };
         this.view.updatePosition(this.model);
 
-        if (!this.model.isPlayerJumping && this.currentStep) {
-            this.model.position = { x: this.model.position.x, y: this.currentStep.position.y + this.currentStep.dimensions.height };
-            this.view.updatePosition(this.model);
+        if (this.currentStep) {
+            const stepBottomY = this.currentStep.position.y + this.currentStep.dimensions.height;
+            if (newY < stepBottomY && !this.model.isPlayerJumping) {
+                this.model.position = { x: this.model.position.x, y: stepBottomY };
+                this.model.velocity = 0;
+                this.model.isPlayerJumping = false;
+            }
         }
 
-        const isPlayerAboveStep = steps.some((step) =>
-            this.model.position.y >= step.position.y &&
-            this.model.position.y <= step.position.y + step.dimensions.height &&
-            this.model.position.x + 5 >= step.position.x &&
-            this.model.position.x <= step.position.x + step.dimensions.width
-        );
-
-        if (!isPlayerAboveStep && !this.model.isPlayerJumping) {
+        if (newY < -10 || newY > window.innerHeight) {
             gameOverCallback();
         }
     }

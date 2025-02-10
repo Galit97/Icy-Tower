@@ -9,7 +9,7 @@ export class Player {
     constructor(x: number, y: number, imageUrl: string) {
         this.positionX = x;
         this.positionY = y;
-        this.imageUrl = imageUrl; 
+        this.imageUrl = imageUrl;
         this.velocityY = 0;
         this.gravity = 0.5;
         this.isJumping = false;
