@@ -26,7 +26,12 @@ try {
 
     const getImagePath = (filename: string) => {
         const base = import.meta.env.BASE_URL || '/';
-        return `${base}images/${filename}`.replace('//', '/');
+        let path = `${base}images/${filename}`.replace('//', '/');
+        // Ensure absolute path for mobile
+        if (!path.startsWith('/') && !path.startsWith('http')) {
+            path = '/' + path;
+        }
+        return path;
     };
     // Set initial player position - 200px above controllers on mobile, 0 on desktop
     const isMobileDevice = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
@@ -52,9 +57,25 @@ try {
         let lastTap = 0;
         let isMoving = false;
         
+        // Initialize audio context on first touch (required for mobile)
+        let audioInitialized = false;
+        const initAudio = async () => {
+            if (!audioInitialized) {
+                audioInitialized = true;
+                try {
+                    const { soundManager } = await import('./utils/SoundManager');
+                    // Trigger audio context initialization
+                    await soundManager.playJumpSound();
+                } catch (e) {
+                    // Ignore - will be handled on next play
+                }
+            }
+        };
+        
         // Left/right movement based on touch position
         mainElement.addEventListener("touchstart", (e) => {
             e.preventDefault();
+            initAudio(); // Initialize audio on first touch
             if (e.touches.length === 1) {
                 const screenWidth = window.innerWidth;
                 const touchX = e.touches[0].clientX;

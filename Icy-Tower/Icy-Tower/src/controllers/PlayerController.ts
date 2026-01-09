@@ -1,6 +1,7 @@
 import { Player } from "../models/PlayerModel";
 import { PlayerView } from "../views/PlayerView";
 import { Step } from "../models/StepModel";
+import { soundManager } from "../utils/SoundManager";
 
 export class PlayerController {
     private model: Player;
@@ -12,6 +13,7 @@ export class PlayerController {
     private currentStep: Step | null = null;
     private wasOnStep: boolean = false;
     private isGameOver: boolean = false;
+    private airJumps: number = 0; // Track air jumps (max 3)
 
     constructor(model: Player, view: PlayerView) {
         this.model = model;
@@ -100,13 +102,28 @@ export class PlayerController {
     }
 
     jump() {
-        // Allow jump if not currently jumping, or if velocity is 0 (on ground/step)
-        // This allows jumping again after landing
-        if (!this.model.isPlayerJumping || this.model.velocity === 0) {
+        const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+        const isOnGround = this.model.velocity === 0 || this.currentStep !== null;
+        
+        // Allow jump if:
+        // 1. On ground/step (velocity is 0 or on a step)
+        // 2. In air but haven't used all 3 air jumps yet
+        if (isOnGround || (this.model.isPlayerJumping && this.airJumps < 3)) {
             this.model.isPlayerJumping = true;
-            // Smaller jump on mobile
-            const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-            this.model.velocity = isMobile ? 10 : 15;
+            
+            // Much higher jump - increased velocity
+            if (isOnGround) {
+                // Ground jump - very high
+                this.model.velocity = isMobile ? 18 : 25;
+                this.airJumps = 0; // Reset air jumps when jumping from ground
+            } else {
+                // Air jump - still high but slightly less than ground jump
+                this.airJumps++;
+                this.model.velocity = isMobile ? 16 : 22;
+            }
+            
+            // Play jump sound
+            soundManager.playJumpSound();
         }
     }
 
@@ -135,6 +152,17 @@ export class PlayerController {
             const isOnStep = this.model.position.x + 5 >= this.currentStep.position.x &&
                            this.model.position.x <= this.currentStep.position.x + this.currentStep.dimensions.width;
             
+            // Check if step has gone below the floor while player is on it
+            const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+            const floorY = isMobile ? 70 : 0; // Floor position from bottom (in pixels from bottom)
+            
+            // stepTopY is already the step's top position in pixels from bottom
+            // If step's top is below the floor, the step has gone below the floor
+            if (isOnStep && stepTopY < floorY) {
+                this.triggerGameOver(gameOverCallback);
+                return;
+            }
+            
             if (isOnStep && newY <= stepTopY && !this.model.isPlayerJumping) {
                 // Player is on the step, keep them on top
                 newY = stepTopY;
@@ -142,6 +170,7 @@ export class PlayerController {
                 this.model.isPlayerJumping = false;
                 isLanded = true;
                 this.wasOnStep = true;
+                this.airJumps = 0; // Reset air jumps when landing on step
             } else if (!isOnStep || newY > stepTopY) {
                 // Player left the step or jumped above
                 // Keep wasOnStep true to track that they fell from a brick
@@ -170,6 +199,7 @@ export class PlayerController {
                     this.currentStep = step;
                     isLanded = true;
                     this.wasOnStep = true;
+                    this.airJumps = 0; // Reset air jumps when landing on step
                 }
             });
         }
@@ -183,6 +213,7 @@ export class PlayerController {
                 newY = 0;
                 this.model.velocity = 0;
                 this.model.isPlayerJumping = false;
+                this.airJumps = 0; // Reset air jumps when landing on floor
             } else if (isMobile && newY < 70) {
                 // On mobile, floor is at 70px from bottom - trigger game over when hitting floor
                 // Only trigger if player was on a step before AND there are 8+ bricks
@@ -195,6 +226,7 @@ export class PlayerController {
                     newY = 70;
                     this.model.velocity = 0;
                     this.model.isPlayerJumping = false; // Reset jump when landing on floor
+                    this.airJumps = 0; // Reset air jumps when landing on floor
                 }
             } else {
                 this.model.velocity = newVelocity;
@@ -287,6 +319,10 @@ export class PlayerController {
         this.isGameOver = true;
         // Stop player physics
         this.model.velocity = 0;
+        
+        // Play fail sound
+        soundManager.playFailSound();
+        
         // Trigger fall and spin animation, then show game over screen
         this.view.triggerFallAndSpin(() => {
             gameOverCallback();

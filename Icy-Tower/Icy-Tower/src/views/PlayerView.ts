@@ -9,7 +9,37 @@ export class PlayerView {
 
     render(player: Player, mainElement: HTMLDivElement) {
         const playerElement = document.createElement("img");
-        playerElement.src = player.image;
+        
+        // Fix image path for mobile - ensure absolute path
+        const getImagePath = (filename: string) => {
+            const base = import.meta.env.BASE_URL || '/';
+            // Ensure path starts with / for absolute paths
+            let path = `${base}images/${filename}`.replace('//', '/');
+            if (!path.startsWith('/') && !path.startsWith('http')) {
+                path = '/' + path;
+            }
+            return path;
+        };
+        
+        // Use absolute path
+        const imagePath = player.image.startsWith('/') || player.image.startsWith('http') 
+            ? player.image 
+            : getImagePath(player.image.split('/').pop() || 'character3.png');
+        
+        playerElement.src = imagePath;
+        playerElement.loading = "eager"; // Force immediate loading
+        playerElement.crossOrigin = "anonymous"; // Help with CORS if needed
+        
+        // Error handling for image loading
+        playerElement.onerror = () => {
+            console.error(`Failed to load image: ${imagePath}`);
+            // Try fallback path
+            const fallbackPath = `/images/${player.image.split('/').pop() || 'character3.png'}`;
+            if (playerElement.src !== fallbackPath) {
+                playerElement.src = fallbackPath;
+            }
+        };
+        
         playerElement.style.position = "absolute";
         playerElement.style.bottom = `${player.position.y}px`;
         playerElement.style.left = `${player.position.x}vw`;
@@ -23,6 +53,7 @@ export class PlayerView {
         playerElement.style.webkitUserSelect = "none";
         (playerElement.style as any).webkitTouchCallout = "none";
         playerElement.style.pointerEvents = "auto";
+        playerElement.style.touchAction = "manipulation";
         
         mainElement.appendChild(playerElement);
         this.element = playerElement;
@@ -129,7 +160,30 @@ export class PlayerView {
 
     updateImage(player: Player) {
         if (this.element) {
-            this.element.src = player.image;
+            // Fix image path for mobile - ensure absolute path
+            const getImagePath = (filename: string) => {
+                const base = import.meta.env.BASE_URL || '/';
+                let path = `${base}images/${filename}`.replace('//', '/');
+                if (!path.startsWith('/') && !path.startsWith('http')) {
+                    path = '/' + path;
+                }
+                return path;
+            };
+            
+            const imagePath = player.image.startsWith('/') || player.image.startsWith('http')
+                ? player.image
+                : getImagePath(player.image.split('/').pop() || 'character3.png');
+            
+            this.element.src = imagePath;
+            
+            // Error handling
+            this.element.onerror = () => {
+                console.error(`Failed to load image: ${imagePath}`);
+                const fallbackPath = `/images/${player.image.split('/').pop() || 'character3.png'}`;
+                if (this.element && this.element.src !== fallbackPath) {
+                    this.element.src = fallbackPath;
+                }
+            };
         }
     }
 }
