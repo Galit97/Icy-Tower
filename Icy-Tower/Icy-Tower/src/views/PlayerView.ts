@@ -77,14 +77,18 @@ export class PlayerView {
 
     triggerFallAndSpin(callback: () => void) {
         if (this.element) {
+            // Check if mobile device
+            const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+            const floorBottom = isMobile ? '120px' : '0px'; // Floor is 120px from bottom on mobile
+            
             // Start continuous spinning (3 full rotations = 1080 degrees)
             this.element.style.animation = 'spinFall 2s ease-in forwards';
-            // Animate falling to the bottom (0px from bottom = floor)
+            // Animate falling to the bottom (floor position)
             this.element.style.transition = 'bottom 2s ease-in';
             // Force reflow to ensure transition works
             void this.element.offsetHeight;
-            // Fall to the floor (bottom: 0px)
-            this.element.style.bottom = '0px';
+            // Fall to the floor
+            this.element.style.bottom = floorBottom;
             
             // Call callback after animation completes
             setTimeout(() => {

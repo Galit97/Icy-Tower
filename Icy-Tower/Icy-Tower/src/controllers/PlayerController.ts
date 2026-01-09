@@ -190,6 +190,16 @@ export class PlayerController {
         
         // On mobile: game over if player falls without landing on bricks (regardless of brick count)
         if (isMobile) {
+            // Calculate visible game area (accounting for mobile controls and floor)
+            const visibleGameHeight = window.innerHeight - 120; // 120px for controls/floor area
+            const floorY = visibleGameHeight;
+            
+            // Game over if player falls below the visible game area (hits the floor)
+            if (newY > floorY) {
+                this.triggerGameOver(gameOverCallback);
+                return;
+            }
+            
             if (!isLanded && this.model.velocity < -5 && this.currentStep === null && newY > 100) {
                 // Player is falling fast, not on any step, and below the top area
                 // Check if there's a step nearby that could catch them
@@ -215,12 +225,6 @@ export class PlayerController {
                     this.triggerGameOver(gameOverCallback);
                     return;
                 }
-            }
-            
-            // Game over if player falls off screen on mobile
-            if (newY > window.innerHeight) {
-                this.triggerGameOver(gameOverCallback);
-                return;
             }
         }
         
