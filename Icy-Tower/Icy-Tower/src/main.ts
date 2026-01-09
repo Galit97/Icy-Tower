@@ -46,34 +46,57 @@ try {
     rightBorder.classList.add("border-indicator", "right");
     mainElement.appendChild(rightBorder);
 
-    // Setup mobile control buttons
-    const mobileLeft = document.getElementById("mobile-left") as HTMLButtonElement;
-    const mobileRight = document.getElementById("mobile-right") as HTMLButtonElement;
-    const mobileJump = document.getElementById("mobile-jump") as HTMLButtonElement;
-
-    if (mobileLeft && mobileRight && mobileJump) {
-        mobileLeft.addEventListener("touchstart", (e) => {
+    // Setup mobile touch controls: left/right sides for movement, double-tap for jump
+    const isMobileTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+    if (isMobileTouch) {
+        let lastTap = 0;
+        let isMoving = false;
+        
+        // Left/right movement based on touch position
+        mainElement.addEventListener("touchstart", (e) => {
             e.preventDefault();
-            playerController.moveLeft();
+            if (e.touches.length === 1) {
+                const screenWidth = window.innerWidth;
+                const touchX = e.touches[0].clientX;
+                
+                // Left half of screen = move left, right half = move right
+                if (touchX < screenWidth / 2) {
+                    playerController.moveLeft();
+                    isMoving = true;
+                } else {
+                    playerController.moveRight();
+                    isMoving = true;
+                }
+            }
         });
-        mobileLeft.addEventListener("touchend", (e) => {
+        
+        mainElement.addEventListener("touchmove", (e) => {
             e.preventDefault();
+            // Continue movement while dragging
+            if (e.touches.length === 1 && isMoving) {
+                const screenWidth = window.innerWidth;
+                const touchX = e.touches[0].clientX;
+                
+                if (touchX < screenWidth / 2) {
+                    playerController.moveLeft();
+                } else {
+                    playerController.moveRight();
+                }
+            }
         });
-
-        mobileRight.addEventListener("touchstart", (e) => {
+        
+        mainElement.addEventListener("touchend", (e) => {
             e.preventDefault();
-            playerController.moveRight();
-        });
-        mobileRight.addEventListener("touchend", (e) => {
-            e.preventDefault();
-        });
-
-        mobileJump.addEventListener("touchstart", (e) => {
-            e.preventDefault();
-            playerController.jump();
-        });
-        mobileJump.addEventListener("touchend", (e) => {
-            e.preventDefault();
+            isMoving = false;
+            
+            // Double-tap detection for jump
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTap;
+            if (tapLength < 300 && tapLength > 0) {
+                // Double tap detected - jump
+                playerController.jump();
+            }
+            lastTap = currentTime;
         });
     }
 

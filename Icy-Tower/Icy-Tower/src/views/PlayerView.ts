@@ -42,10 +42,11 @@ export class PlayerView {
         
         playerElement.addEventListener("touchend", (e) => {
             e.preventDefault();
+            e.stopPropagation(); // Prevent triggering screen double-tap
             const currentTime = new Date().getTime();
             const tapLength = currentTime - lastTap;
             if (tapLength < 300 && tapLength > 0) {
-                // Double tap detected
+                // Double tap detected on character - switch character
                 this.switchCharacter(player);
             }
             lastTap = currentTime;

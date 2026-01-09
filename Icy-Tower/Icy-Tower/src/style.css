@@ -221,10 +221,10 @@ button:active {
   transform: scale(0.9);
 }
 
-/* Show mobile controls on touch devices */
+/* Hide mobile controls on touch devices - using screen touch instead */
 @media (hover: none) and (pointer: coarse) {
   #mobile-controls {
-    display: flex;
+    display: none !important;
   }
   
   /* Make character much bigger on mobile */
