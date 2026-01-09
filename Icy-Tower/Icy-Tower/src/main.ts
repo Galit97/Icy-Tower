@@ -227,10 +227,10 @@ try {
             stepView.element.classList.add("many-bricks");
         }
         
-        // Increase interval as game progresses (every 5 steps, increase by 200ms on mobile, 100ms on desktop)
+        // Increase interval as game progresses (every 5 steps, increase by 150ms on mobile, 100ms on desktop)
         if (steps.length % 5 === 0 && steps.length > 0) {
-            const increaseAmount = isMobile ? 200 : 100;
-            const maxInterval = isMobile ? 8000 : 4000;
+            const increaseAmount = isMobile ? 150 : 100;
+            const maxInterval = isMobile ? 5000 : 4000;
             currentStepInterval = Math.min(currentStepInterval + increaseAmount, maxInterval);
             
             // Restart interval with new timing
@@ -294,8 +294,9 @@ try {
 
             for (let index = steps.length - 1; index >= 0; index--) {
                 const step = steps[index];
-                // Steps move at same speed on mobile and desktop
-                const moveSpeed = 0.120;
+                // Steps move faster on mobile
+                const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+                const moveSpeed = isMobile ? 0.180 : 0.120; // Faster on mobile
                 step.position = { x: step.position.x, y: step.position.y + moveSpeed };
                 stepViews[index].updatePosition(step);
                 
@@ -339,7 +340,7 @@ try {
             if (stepInterval) clearInterval(stepInterval);
         } else {
             const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-            const baseInterval = isMobile ? 8000 : 1200; // Much larger gap on mobile
+            const baseInterval = isMobile ? 2500 : 1200; // Larger gap on mobile
             currentStepInterval = baseInterval;
             stepInterval = setInterval(createStep, currentStepInterval);
         }
@@ -356,7 +357,7 @@ try {
     });
 
             const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-            const baseInterval = isMobile ? 1500 : 2000; // Much larger gap on mobile
+            const baseInterval = isMobile ? 2500 : 2000; // Larger gap on mobile
             currentStepInterval = baseInterval;
             stepInterval = setInterval(createStep, currentStepInterval);
             gameLoop();
