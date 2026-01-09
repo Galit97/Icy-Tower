@@ -230,13 +230,25 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s;
+  transition: opacity 0.3s;
+  flex-shrink: 0;
+  touch-action: manipulation;
+  background: none;
+  border: none;
+  pointer-events: auto;
+  z-index: 1001;
 }
 
-#developer-icon:hover {
-  background-color: rgba(0, 0, 0, 0.2);
+#developer-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#developer-icon:hover,
+#developer-icon:active,
+#developer-icon.touched {
+  opacity: 0.8;
 }
 
 #developer-icon::after {
@@ -261,7 +273,9 @@ body {
   text-align: center;
 }
 
-#developer-icon:hover::after {
+#developer-icon:hover::after,
+#developer-icon:active::after,
+#developer-icon.touched::after {
   opacity: 1;
 }
 
@@ -435,10 +449,11 @@ button:active {
     padding: 5px 6px;
     white-space: nowrap !important;
     max-width: calc(100vw - 16px);
-    overflow: hidden;
+    overflow: visible !important;
     flex-wrap: nowrap !important;
     gap: 5px;
     box-sizing: border-box;
+    z-index: 1000;
   }
   
   #game-title span:first-child {
@@ -456,25 +471,52 @@ button:active {
     height: 18px;
     flex-shrink: 0;
     min-width: 18px;
+    touch-action: manipulation;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
   }
   
   #developer-icon svg {
     width: 18px;
     height: 18px;
+    display: block;
+  }
+  
+  #developer-icon {
+    pointer-events: auto !important;
+    position: relative !important;
   }
   
   #developer-icon::after {
-    top: auto;
-    bottom: 100%;
-    margin-top: 0;
-    margin-bottom: 5px;
-    font-size: 8px;
-    padding: 5px 8px;
-    white-space: pre;
-    line-height: 1.2;
-    max-width: 180px;
-    word-break: break-word;
-    text-align: center;
+    content: 'developed by\Aonline.galit@gmail.com' !important;
+    position: absolute !important;
+    top: auto !important;
+    bottom: calc(100% + 5px) !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background-color: rgba(0, 0, 0, 0.9) !important;
+    color: #ffffff !important;
+    padding: 6px 10px !important;
+    border-radius: 4px !important;
+    font-size: 8px !important;
+    font-family: 'Press Start 2P', cursive !important;
+    white-space: pre !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 0.3s !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    z-index: 10000 !important;
+    line-height: 1.4 !important;
+    text-align: center !important;
+    display: block !important;
+  }
+  
+  #developer-icon.touched::after {
+    opacity: 1 !important;
+    visibility: visible !important;
   }
 }
 

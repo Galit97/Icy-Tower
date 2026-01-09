@@ -54,6 +54,64 @@ try {
         }
     });
 
+    // Add touch handler for developer icon on mobile
+    const developerIcon = document.getElementById("developer-icon");
+    if (developerIcon) {
+        let touchTimeout: number | null = null;
+        let touchStartTime = 0;
+        let touchStartY = 0;
+        
+        // Use a more direct approach - toggle on tap
+        developerIcon.addEventListener("touchstart", (e) => {
+            e.stopPropagation();
+            const touch = e.touches[0];
+            touchStartY = touch.clientY;
+            touchStartTime = Date.now();
+        }, { passive: true });
+        
+        developerIcon.addEventListener("touchend", (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            const touch = e.changedTouches[0];
+            const touchEndY = touch.clientY;
+            const touchDuration = Date.now() - touchStartTime;
+            const touchDistance = Math.abs(touchEndY - touchStartY);
+            
+            // Only trigger on quick tap (not long press or swipe)
+            if (touchDuration < 300 && touchDistance < 10) {
+                // Toggle the tooltip
+                const isVisible = developerIcon.classList.contains("touched");
+                if (isVisible) {
+                    developerIcon.classList.remove("touched");
+                    if (touchTimeout) clearTimeout(touchTimeout);
+                } else {
+                    developerIcon.classList.add("touched");
+                    if (touchTimeout) clearTimeout(touchTimeout);
+                    touchTimeout = window.setTimeout(() => {
+                        developerIcon.classList.remove("touched");
+                    }, 5000); // Show for 5 seconds
+                }
+            }
+        }, { passive: false });
+        
+        // Also handle click for better compatibility
+        developerIcon.addEventListener("click", (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            const isVisible = developerIcon.classList.contains("touched");
+            if (isVisible) {
+                developerIcon.classList.remove("touched");
+                if (touchTimeout) clearTimeout(touchTimeout);
+            } else {
+                developerIcon.classList.add("touched");
+                if (touchTimeout) clearTimeout(touchTimeout);
+                touchTimeout = window.setTimeout(() => {
+                    developerIcon.classList.remove("touched");
+                }, 5000);
+            }
+        });
+    }
+
     // Add border indicators for mobile
     const leftBorder = document.createElement("div");
     leftBorder.classList.add("border-indicator", "left");
@@ -86,6 +144,12 @@ try {
         
         // Left/right movement based on touch position
         mainElement.addEventListener("touchstart", (e) => {
+            // Don't interfere with developer icon touches
+            const target = e.target as HTMLElement;
+            if (target && (target.id === "developer-icon" || target.closest("#developer-icon"))) {
+                return; // Let the icon handle its own touch
+            }
+            
             e.preventDefault();
             initAudio(); // Initialize audio on first touch
             if (e.touches.length === 1) {
@@ -141,6 +205,7 @@ try {
     let isPaused = false;
     let isGameOver = false;
     let stepInterval: number | null = null;
+    let currentStepInterval = 0; // Track current interval for dynamic adjustment
 
     function createStep() {
         if (isPaused) return;
@@ -160,6 +225,19 @@ try {
         const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
         if (isMobile && steps.length > 6 && stepView.element) {
             stepView.element.classList.add("many-bricks");
+        }
+        
+        // Increase interval as game progresses (every 5 steps, increase by 200ms on mobile, 100ms on desktop)
+        if (steps.length % 5 === 0 && steps.length > 0) {
+            const increaseAmount = isMobile ? 200 : 100;
+            const maxInterval = isMobile ? 8000 : 4000;
+            currentStepInterval = Math.min(currentStepInterval + increaseAmount, maxInterval);
+            
+            // Restart interval with new timing
+            if (stepInterval) {
+                clearInterval(stepInterval);
+            }
+            stepInterval = setInterval(createStep, currentStepInterval);
         }
     }
 
@@ -216,9 +294,8 @@ try {
 
             for (let index = steps.length - 1; index >= 0; index--) {
                 const step = steps[index];
-                // Smaller gap between bricks on mobile
-                const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-                const moveSpeed = isMobile ? 0.070 : 0.120;
+                // Steps move at same speed on mobile and desktop
+                const moveSpeed = 0.120;
                 step.position = { x: step.position.x, y: step.position.y + moveSpeed };
                 stepViews[index].updatePosition(step);
                 
@@ -262,8 +339,9 @@ try {
             if (stepInterval) clearInterval(stepInterval);
         } else {
             const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-            const interval = isMobile ? 3200 : 2000; // Larger gap on mobile
-            stepInterval = setInterval(createStep, interval);
+            const baseInterval = isMobile ? 8000 : 1200; // Much larger gap on mobile
+            currentStepInterval = baseInterval;
+            stepInterval = setInterval(createStep, currentStepInterval);
         }
     });
 
@@ -278,8 +356,9 @@ try {
     });
 
             const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-            const initialInterval = isMobile ? 3200 : 2000; // Larger gap on mobile
-            stepInterval = setInterval(createStep, initialInterval);
+            const baseInterval = isMobile ? 1500 : 2000; // Much larger gap on mobile
+            currentStepInterval = baseInterval;
+            stepInterval = setInterval(createStep, currentStepInterval);
             gameLoop();
         } catch (error) {
             console.error("Error initializing game:", error);
