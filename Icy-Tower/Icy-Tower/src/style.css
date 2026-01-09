@@ -195,11 +195,13 @@ body {
 #step-counter::before {
   content: 'STEPS:';
   font-size: 16px;
+  margin-top: 25px;
   color: #000000;
 }
 
 #step-count {
   font-size: 24px;
+  margin-top: 25px;
   color: #000000;
 }
 
