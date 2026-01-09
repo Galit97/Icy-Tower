@@ -216,11 +216,6 @@ body {
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  white-space: nowrap;
-}
-
-#game-title span:first-child {
-  white-space: nowrap;
 }
 
 #developer-icon {
@@ -233,21 +228,17 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.3s;
-  flex-shrink: 0;
-}
-
-#developer-icon svg {
-  width: 100%;
-  height: 100%;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s;
 }
 
 #developer-icon:hover {
-  opacity: 0.8;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 #developer-icon::after {
-  content: 'developed by\Aonline.galit@gmail.com';
+  content: 'developed by online.galit@gmail.com';
   position: absolute;
   top: 100%;
   left: 50%;
@@ -256,16 +247,14 @@ body {
   color: #ffffff;
   padding: 8px 12px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: 12px;
   font-family: 'Press Start 2P', cursive;
-  white-space: pre;
+  white-space: nowrap;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s;
   margin-top: 5px;
   z-index: 1000;
-  line-height: 1.4;
-  text-align: center;
 }
 
 #developer-icon:hover::after {
@@ -438,33 +427,12 @@ button:active {
   #game-title {
     top: auto;
     bottom: 0;
-    font-size: 18px;
-    padding: 6px 8px;
-    white-space: nowrap;
-    max-width: calc(100vw - 20px);
-    overflow: visible;
-    flex-wrap: nowrap;
-    gap: 6px;
-    box-sizing: border-box;
-  }
-  
-  #game-title span:first-child {
-    white-space: nowrap;
-    overflow: visible;
-    text-overflow: clip;
-    flex-shrink: 1;
-    min-width: 0;
+    font-size: 30px;
+    padding: 8px 15px;
   }
   
   #developer-icon {
     font-size: 14px;
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-    min-width: 18px;
-  }
-  
-  #developer-icon svg {
     width: 18px;
     height: 18px;
   }
@@ -474,12 +442,6 @@ button:active {
     bottom: 100%;
     margin-top: 0;
     margin-bottom: 5px;
-    font-size: 9px;
-    padding: 6px 10px;
-    white-space: pre;
-    line-height: 1.3;
-    max-width: 200px;
-    word-break: break-word;
   }
 }
 
