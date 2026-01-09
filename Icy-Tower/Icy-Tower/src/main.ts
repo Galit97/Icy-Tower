@@ -41,6 +41,18 @@ try {
     const playerController = new PlayerController(player, playerView);
 
     playerController.initialize(mainElement);
+    
+    // Set up callback to track when player lands on steps
+    playerController.setOnStepLandedCallback((step: Step) => {
+        if (!landedSteps.has(step)) {
+            landedSteps.add(step);
+            // Update step counter
+            const stepCount = document.getElementById("step-count");
+            if (stepCount) {
+                stepCount.textContent = landedSteps.size.toString();
+            }
+        }
+    });
 
     // Add border indicators for mobile
     const leftBorder = document.createElement("div");
@@ -124,6 +136,7 @@ try {
     const steps: Step[] = [];
     const stepViews: StepView[] = [];
     const stepControllers: StepController[] = [];
+    const landedSteps = new Set<Step>(); // Track which steps have been landed on
 
     let isPaused = false;
     let isGameOver = false;
@@ -140,6 +153,8 @@ try {
         steps.push(stepModel);
         stepViews.push(stepView);
         stepControllers.push(stepController);
+        
+        // Don't update counter here - only when player lands on steps
         
         // Add class for smaller bricks on mobile when more than 6
         const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
@@ -253,6 +268,12 @@ try {
     });
 
     restartButton.addEventListener("click", () => {
+        // Reset step counter and landed steps
+        landedSteps.clear();
+        const stepCount = document.getElementById("step-count");
+        if (stepCount) {
+            stepCount.textContent = "0";
+        }
         location.reload();
     });
 

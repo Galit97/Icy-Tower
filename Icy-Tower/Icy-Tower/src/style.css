@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Didot:wght@400;700&display=swap');
+
 html, body {
   height: 100%;
   width: 100%;
@@ -56,10 +58,38 @@ body {
   }
 }
 
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0.4;
+    background-position: 0% 0%, 100% 0%, 0% 100%, 100% 100%;
+  }
+  25% {
+    opacity: 0.8;
+    background-position: 50% 25%, 50% 25%, 50% 75%, 50% 75%;
+  }
+  50% {
+    opacity: 1;
+    background-position: 100% 50%, 0% 50%, 100% 50%, 0% 50%;
+  }
+  75% {
+    opacity: 0.8;
+    background-position: 50% 75%, 50% 75%, 50% 25%, 50% 25%;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
 :root {
-  --base-color: #d7d3f1;
-  --shadow-color: #8686aa;
-  --border-color: #000000;
+  --base-color: #C0C0C0;
+  --shadow-color: #808080;
+  --border-color: #606060;
   --step-width: 150px;
   --step-height: 30px;
   --border-radius: 20px;
@@ -73,8 +103,49 @@ body {
   width: var(--width, 200px);
   height: 60px;
   position: absolute;
-  box-shadow: 0 6px 8px var(--border-color), 0 2px 4px var(--border-color);
-  background: linear-gradient(to bottom, var(--base-color) 0%, var(--shadow-color) 100%);
+  box-shadow: 0 6px 8px var(--border-color), 0 2px 4px var(--border-color),
+    inset 0 0 20px rgba(255, 255, 255, 0.3),
+    0 0 10px rgba(192, 192, 192, 0.5);
+  background: linear-gradient(to bottom, #E8E8E8 0%, #C0C0C0 50%, #A0A0A0 100%);
+  overflow: hidden;
+}
+
+.stepDesign::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.7),
+    transparent
+  );
+  animation: shimmer 3s infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.stepDesign::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+    radial-gradient(circle at 60% 50%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+    radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.8) 1px, transparent 1px);
+  background-size: 200% 200%;
+  background-position: 0% 0%, 100% 0%, 0% 100%, 100% 100%;
+  animation: sparkle 3s infinite;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.6;
 }
 
 /* Make bricks smaller height on mobile when there are more than 6 bricks */
@@ -97,16 +168,97 @@ body {
   align-items: center;
 }
 
-#startOverButton, #pauseButton {
+#startOverButton, #pauseButton, #pause, #restart {
   font-size: 40px;
   background-color: transparent;
-  background: linear-gradient(90deg, #ffffff, #404040);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  -webkit-text-stroke: 1px black;
+  color: #000000;
+  -webkit-text-fill-color: #000000;
+  -webkit-text-stroke: 0;
   font-weight: 900;
   border: none;
   margin-left: 10px;
+}
+
+#step-counter {
+  position: absolute;
+  right: 2vh;
+  top: 0;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 24px;
+  color: #000000;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#step-counter::before {
+  content: 'STEPS:';
+  font-size: 16px;
+  color: #000000;
+}
+
+#step-count {
+  font-size: 24px;
+  color: #000000;
+}
+
+#game-title {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Didot', 'Didot LT Pro', 'Didot Display', serif;
+  font-size: 40px;
+  color: #000000;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+}
+
+#developer-icon {
+  font-size: 16px;
+  color: #000000;
+  cursor: pointer;
+  position: relative;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s;
+}
+
+#developer-icon:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+#developer-icon::after {
+  content: 'developed by online.Galit@gmail.com';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.9);
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: 'Press Start 2P', cursive;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  margin-top: 5px;
+  z-index: 1000;
+}
+
+#developer-icon:hover::after {
+  opacity: 1;
 }
 
 #game-container {
@@ -233,13 +385,63 @@ button:active {
     transform: scale(1.5);
     transform-origin: center bottom;
   }
+}
+
+/* Tablet-specific styles - smaller character */
+@media (hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1024px) {
+  .player {
+    width: 8vw !important;
+    transform: scale(1.2) !important;
+    transform-origin: center bottom;
+  }
+}
+
+/* Medium screens (1200-1500px) - smaller character and fix brick stretching */
+@media (min-width: 1000px)  {
+  .player {
+    width: 8vw !important;
+    transform: scale(1.0) !important;
+    transform-origin: center bottom;
+  }
   
+  .stepDesign {
+    max-width: 200px !important;
+    min-width: 100px !important;
+    background-size: 100% 100% !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+  }
+}
+
+/* Re-apply mobile styles for smaller screens */
+@media (hover: none) and (pointer: coarse) {
   /* Stack background image vertically (one on top of the other) on mobile */
   body {
     background-image: url("/images/bricks.png"), url("/images/bricks.png");
     background-size: 100% 50%, 100% 50%;
     background-position: top center, bottom center;
     background-repeat: no-repeat, no-repeat;
+  }
+  
+  /* Game title on mobile - bottom, smaller */
+  #game-title {
+    top: auto;
+    bottom: 0;
+    font-size: 30px;
+    padding: 8px 15px;
+  }
+  
+  #developer-icon {
+    font-size: 14px;
+    width: 18px;
+    height: 18px;
+  }
+  
+  #developer-icon::after {
+    top: auto;
+    bottom: 100%;
+    margin-top: 0;
+    margin-bottom: 5px;
   }
 }
 

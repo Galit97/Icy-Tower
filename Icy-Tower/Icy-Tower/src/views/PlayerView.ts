@@ -147,8 +147,6 @@ export class PlayerView {
         } else if (player.image.includes("character6.png")) {
             newImage = getImagePath("character7.png");
         } else if (player.image.includes("character7.png")) {
-            newImage = getImagePath("character8.png");
-        } else if (player.image.includes("character8.png")) {
             newImage = getImagePath("character3.png");
         } else {
             // Default to character3 (for character1, character2, or any other)

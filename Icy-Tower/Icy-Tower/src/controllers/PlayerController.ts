@@ -14,6 +14,7 @@ export class PlayerController {
     private wasOnStep: boolean = false;
     private isGameOver: boolean = false;
     private airJumps: number = 0; // Track air jumps (max 3)
+    private onStepLandedCallback: ((step: Step) => void) | null = null;
 
     constructor(model: Player, view: PlayerView) {
         this.model = model;
@@ -24,6 +25,10 @@ export class PlayerController {
         this.view.render(this.model, mainElement);
         document.addEventListener("keydown", (e) => this.handleKeydown(e));
         this.setupTouchControls(mainElement);
+    }
+    
+    setOnStepLandedCallback(callback: (step: Step) => void) {
+        this.onStepLandedCallback = callback;
     }
 
     private setupTouchControls(mainElement: HTMLDivElement) {
@@ -181,6 +186,11 @@ export class PlayerController {
                 isLanded = true;
                 this.wasOnStep = true;
                 this.airJumps = 0; // Reset air jumps when landing on step
+                
+                // Notify that player is on a step (for tracking)
+                if (this.onStepLandedCallback) {
+                    this.onStepLandedCallback(this.currentStep);
+                }
             } else if (!isOnStep || newY > stepTopY) {
                 // Player left the step or jumped above
                 // Keep wasOnStep true to track that they fell from a brick
@@ -210,6 +220,11 @@ export class PlayerController {
                     isLanded = true;
                     this.wasOnStep = true;
                     this.airJumps = 0; // Reset air jumps when landing on step
+                    
+                    // Notify that player landed on a step
+                    if (this.onStepLandedCallback) {
+                        this.onStepLandedCallback(step);
+                    }
                 }
             });
         }
