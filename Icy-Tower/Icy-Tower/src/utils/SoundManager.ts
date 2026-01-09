@@ -1,13 +1,58 @@
 export class SoundManager {
     private audioContext: AudioContext | null = null;
     private isInitialized: boolean = false;
+    private unlockAudioPromise: Promise<void> | null = null;
 
     constructor() {
         // Don't initialize audio context in constructor - wait for user interaction
-        // This is required for mobile browsers
+        // This is required for mobile browsers, especially iOS
+    }
+
+    // Unlock audio on iOS - create and play a silent buffer
+    // Made public so it can be called from main.ts on first touch
+    async unlockAudio() {
+        if (this.unlockAudioPromise) {
+            return this.unlockAudioPromise;
+        }
+
+        this.unlockAudioPromise = (async () => {
+            if (!this.audioContext) {
+                try {
+                    this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+                } catch (e) {
+                    console.warn("Web Audio API not supported:", e);
+                    return;
+                }
+            }
+
+            // Create a silent buffer to unlock audio on iOS
+            try {
+                const buffer = this.audioContext.createBuffer(1, 1, 22050);
+                const source = this.audioContext.createBufferSource();
+                source.buffer = buffer;
+                source.connect(this.audioContext.destination);
+                source.start(0);
+            } catch (e) {
+                // Ignore - some browsers may not need this
+            }
+
+            // Resume audio context
+            if (this.audioContext.state === 'suspended') {
+                try {
+                    await this.audioContext.resume();
+                } catch (e) {
+                    console.warn("Failed to resume audio context:", e);
+                }
+            }
+        })();
+
+        return this.unlockAudioPromise;
     }
 
     private async ensureAudioContext() {
+        // Unlock audio first (especially important for iOS)
+        await this.unlockAudio();
+
         if (!this.audioContext) {
             try {
                 this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
