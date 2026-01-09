@@ -238,7 +238,7 @@ body {
 }
 
 #developer-icon::after {
-  content: 'developed by online.Galit@gmail.com';
+  content: 'developed by online.galit@gmail.com';
   position: absolute;
   top: 100%;
   left: 50%;
