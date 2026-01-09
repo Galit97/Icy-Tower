@@ -218,7 +218,7 @@ try {
                 const step = steps[index];
                 // Smaller gap between bricks on mobile
                 const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-                const moveSpeed = isMobile ? 0.090 : 0.120;
+                const moveSpeed = isMobile ? 0.070 : 0.120;
                 step.position = { x: step.position.x, y: step.position.y + moveSpeed };
                 stepViews[index].updatePosition(step);
                 
@@ -262,7 +262,7 @@ try {
             if (stepInterval) clearInterval(stepInterval);
         } else {
             const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-            const interval = isMobile ? 2800 : 2000; // Larger gap on mobile
+            const interval = isMobile ? 3200 : 2000; // Larger gap on mobile
             stepInterval = setInterval(createStep, interval);
         }
     });
@@ -278,7 +278,7 @@ try {
     });
 
             const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-            const initialInterval = isMobile ? 2800 : 2000; // Larger gap on mobile
+            const initialInterval = isMobile ? 3200 : 2000; // Larger gap on mobile
             stepInterval = setInterval(createStep, initialInterval);
             gameLoop();
         } catch (error) {

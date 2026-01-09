@@ -238,7 +238,7 @@ body {
 }
 
 #developer-icon::after {
-  content: 'developed by online.galit@gmail.com';
+  content: 'developed by\Aonline.galit@gmail.com';
   position: absolute;
   top: 100%;
   left: 50%;
@@ -247,14 +247,16 @@ body {
   color: #ffffff;
   padding: 8px 12px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 11px;
   font-family: 'Press Start 2P', cursive;
-  white-space: nowrap;
+  white-space: pre;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s;
   margin-top: 5px;
   z-index: 1000;
+  line-height: 1.4;
+  text-align: center;
 }
 
 #developer-icon:hover::after {
@@ -427,12 +429,34 @@ button:active {
   #game-title {
     top: auto;
     bottom: 0;
-    font-size: 30px;
-    padding: 8px 15px;
+    font-size: 16px;
+    padding: 5px 6px;
+    white-space: nowrap !important;
+    max-width: calc(100vw - 16px);
+    overflow: hidden;
+    flex-wrap: nowrap !important;
+    gap: 5px;
+    box-sizing: border-box;
+  }
+  
+  #game-title span:first-child {
+    white-space: nowrap !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
+    min-width: 0;
+    display: inline-block;
   }
   
   #developer-icon {
     font-size: 14px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    min-width: 18px;
+  }
+  
+  #developer-icon svg {
     width: 18px;
     height: 18px;
   }
@@ -442,6 +466,13 @@ button:active {
     bottom: 100%;
     margin-top: 0;
     margin-bottom: 5px;
+    font-size: 8px;
+    padding: 5px 8px;
+    white-space: pre;
+    line-height: 1.2;
+    max-width: 180px;
+    word-break: break-word;
+    text-align: center;
   }
 }
 
