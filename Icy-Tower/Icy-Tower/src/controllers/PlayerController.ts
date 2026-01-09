@@ -111,15 +111,15 @@ export class PlayerController {
         if (isOnGround || (this.model.isPlayerJumping && this.airJumps < 3)) {
             this.model.isPlayerJumping = true;
             
-            // Much higher jump - increased velocity
+            // Moderate jump height
             if (isOnGround) {
-                // Ground jump - very high
-                this.model.velocity = isMobile ? 18 : 25;
+                // Ground jump - moderate height
+                this.model.velocity = isMobile ? 12 : 15;
                 this.airJumps = 0; // Reset air jumps when jumping from ground
             } else {
-                // Air jump - still high but slightly less than ground jump
+                // Air jump - slightly less than ground jump
                 this.airJumps++;
-                this.model.velocity = isMobile ? 16 : 22;
+                this.model.velocity = isMobile ? 10 : 13;
             }
             
             // Play jump sound
@@ -135,6 +135,16 @@ export class PlayerController {
 
         let newY = this.model.position.y + this.model.velocity;
         const newVelocity = this.model.velocity - this.model.gravityForce;
+
+        // Prevent character from jumping above the top of the page
+        // Player position is measured from bottom, so max is window.innerHeight
+        if (newY > window.innerHeight) {
+            newY = window.innerHeight;
+            // Stop upward velocity if hitting top
+            if (this.model.velocity > 0) {
+                this.model.velocity = 0;
+            }
+        }
 
         let isLanded = false;
 
