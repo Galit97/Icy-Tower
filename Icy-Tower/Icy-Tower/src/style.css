@@ -11,9 +11,28 @@ body {
 }
 
 .player {
-  width: 80px;
+  width: 15vw;
   height: auto;
   z-index: 6;
+  transform-origin: center center;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinFall {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(1080deg);
+  }
 }
 
 :root {
@@ -35,6 +54,18 @@ body {
   position: absolute;
   box-shadow: 0 6px 8px var(--border-color), 0 2px 4px var(--border-color);
   background: linear-gradient(to bottom, var(--base-color) 0%, var(--shadow-color) 100%);
+}
+
+/* Make bricks smaller height on mobile when there are more than 6 bricks */
+@media (hover: none) and (pointer: coarse) {
+  .stepDesign {
+    height: 40px;
+  }
+  
+  /* Smaller height when more than 6 bricks */
+  .stepDesign.many-bricks {
+    height: 30px;
+  }
 }
 
 #controls {
@@ -124,6 +155,109 @@ button:active {
 
 #play-again:hover {
   background-color: #dddddd;
+}
+
+/* Mobile Controls */
+#mobile-controls {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  gap: 20px;
+  z-index: 100;
+  pointer-events: none;
+}
+
+#mobile-controls button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 3px solid #000;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+#mobile-controls button:active {
+  background-color: rgba(200, 200, 200, 0.9);
+  transform: scale(0.9);
+}
+
+/* Show mobile controls on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  #mobile-controls {
+    display: flex;
+  }
+  
+  /* Make character much bigger on mobile */
+  .player {
+    width: 10vw !important;
+    transform: scale(1.5);
+    transform-origin: center bottom;
+  }
+  
+  /* Stack background image vertically (one on top of the other) on mobile */
+  body {
+    background-image: url("/images/bricks.png"), url("/images/bricks.png");
+    background-size: 100% 50%, 100% 50%;
+    background-position: top center, bottom center;
+    background-repeat: no-repeat, no-repeat;
+  }
+}
+
+/* Prevent text selection and scrolling on mobile */
+* {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+#game-container {
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Border indicators for mobile */
+.border-indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  background-image: url("/images/bricks.png");
+  background-size: cover;
+  background-repeat: repeat-y;
+  background-position: center;
+  border-left: 2px solid rgba(255, 0, 0, 0.6);
+  border-right: 2px solid rgba(255, 0, 0, 0.6);
+  z-index: 10;
+  pointer-events: none;
+  display: none;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+}
+
+.border-indicator.left {
+  left: 8vw;
+}
+
+.border-indicator.right {
+  left: 88vw;
+}
+
+/* Hide border indicators on mobile */
+@media (hover: none) and (pointer: coarse) {
+  .border-indicator {
+    display: none !important;
+  }
 }
 
 

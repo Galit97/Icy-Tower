@@ -16,17 +16,58 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    const player = new Player(10, 0, "/images/character1.png");
+    const player = new Player(10, 0, "/images/character3.png");
     const playerView = new PlayerView();
     const playerController = new PlayerController(player, playerView);
 
     playerController.initialize(mainElement);
+
+    // Add border indicators for mobile
+    const leftBorder = document.createElement("div");
+    leftBorder.classList.add("border-indicator", "left");
+    mainElement.appendChild(leftBorder);
+
+    const rightBorder = document.createElement("div");
+    rightBorder.classList.add("border-indicator", "right");
+    mainElement.appendChild(rightBorder);
+
+    // Setup mobile control buttons
+    const mobileLeft = document.getElementById("mobile-left") as HTMLButtonElement;
+    const mobileRight = document.getElementById("mobile-right") as HTMLButtonElement;
+    const mobileJump = document.getElementById("mobile-jump") as HTMLButtonElement;
+
+    if (mobileLeft && mobileRight && mobileJump) {
+        mobileLeft.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            playerController.moveLeft();
+        });
+        mobileLeft.addEventListener("touchend", (e) => {
+            e.preventDefault();
+        });
+
+        mobileRight.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            playerController.moveRight();
+        });
+        mobileRight.addEventListener("touchend", (e) => {
+            e.preventDefault();
+        });
+
+        mobileJump.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            playerController.jump();
+        });
+        mobileJump.addEventListener("touchend", (e) => {
+            e.preventDefault();
+        });
+    }
 
     const steps: Step[] = [];
     const stepViews: StepView[] = [];
     const stepControllers: StepController[] = [];
 
     let isPaused = false;
+    let isGameOver = false;
     let stepInterval: number | null = null;
 
     function createStep() {
@@ -40,10 +81,17 @@ document.addEventListener("DOMContentLoaded", () => {
         steps.push(stepModel);
         stepViews.push(stepView);
         stepControllers.push(stepController);
+        
+        // Add class for smaller bricks on mobile when more than 6
+        const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+        if (isMobile && steps.length > 6 && stepView.element) {
+            stepView.element.classList.add("many-bricks");
+        }
     }
 
     function gameOver() {
         isPaused = true;
+        isGameOver = true;
         if (stepInterval) clearInterval(stepInterval);
 
         const overlay = document.createElement("div");
@@ -87,20 +135,36 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function gameLoop() {
-        if (!isPaused) {
+        if (!isPaused && !isGameOver) {
             playerController.update(steps, () => {
-                if (steps.length >= 5) {
-                    gameOver();
-                }
-            });
+                gameOver();
+            }, steps.length);
 
             for (let index = steps.length - 1; index >= 0; index--) {
                 const step = steps[index];
-                step.position = { x: step.position.x, y: step.position.y + 0.120 };
+                // Smaller gap between bricks on mobile
+                const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+                const moveSpeed = isMobile ? 0.100 : 0.120;
+                step.position = { x: step.position.x, y: step.position.y + moveSpeed };
                 stepViews[index].updatePosition(step);
+                
+                // Update class for bricks when count changes
+                const stepElement = stepViews[index].element;
+                if (isMobile && stepElement) {
+                    if (steps.length > 6) {
+                        stepElement.classList.add("many-bricks");
+                    } else {
+                        stepElement.classList.remove("many-bricks");
+                    }
+                }
 
+                // Keep player synchronized with step as it moves down
                 if (playerController['currentStep'] === step) {
-                    player.position = { x: player.position.x, y: step.position.y + step.dimensions.height };
+                    // Convert step top position (top in vh) to player position (bottom in px)
+                    const stepTopFromTopVh = step.position.y;
+                    const stepTopFromTopPx = (stepTopFromTopVh / 100) * window.innerHeight;
+                    const playerBottomY = window.innerHeight - stepTopFromTopPx;
+                    player.position = { x: player.position.x, y: playerBottomY };
                     playerView.updatePosition(player);
                 }
 
@@ -123,7 +187,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (isPaused) {
             if (stepInterval) clearInterval(stepInterval);
         } else {
-            stepInterval = setInterval(createStep, 2000);
+            const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+            const interval = isMobile ? 1700 : 2000; // Smaller gap on mobile
+            stepInterval = setInterval(createStep, interval);
         }
     });
 
@@ -131,6 +197,8 @@ document.addEventListener("DOMContentLoaded", () => {
         location.reload();
     });
 
-    stepInterval = setInterval(createStep, 2000);
+    const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+    const initialInterval = isMobile ? 1700 : 2000; // Smaller gap on mobile
+    stepInterval = setInterval(createStep, initialInterval);
     gameLoop();
 });
