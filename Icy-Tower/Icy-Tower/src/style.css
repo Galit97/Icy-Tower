@@ -119,26 +119,10 @@ body {
   min-width: 100vw;
 }
 
-/* Adjust game container on mobile to show more area and add floor */
+/* Adjust game container on mobile to show more play area at top */
 @media (hover: none) and (pointer: coarse) {
   #game-container {
-    height: calc(100vh - 120px);
-    padding-bottom: 120px;
-  }
-  
-  /* Add visible floor at bottom */
-  #game-container::before {
-    content: '';
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 120px;
-    background: linear-gradient(to top, rgba(139, 69, 19, 0.9) 0%, rgba(160, 82, 45, 0.7) 50%, rgba(139, 69, 19, 0.5) 100%);
-    border-top: 3px solid rgba(101, 67, 33, 1);
-    z-index: 150;
-    pointer-events: none;
-    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.5);
+    height: calc(100vh - 50px);
   }
 }
 

@@ -100,7 +100,9 @@ export class PlayerController {
     }
 
     jump() {
-        if (!this.model.isPlayerJumping) {
+        // Allow jump if not currently jumping, or if velocity is 0 (on ground/step)
+        // This allows jumping again after landing
+        if (!this.model.isPlayerJumping || this.model.velocity === 0) {
             this.model.isPlayerJumping = true;
             // Smaller jump on mobile
             const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
@@ -172,11 +174,28 @@ export class PlayerController {
             });
         }
 
+        // Check if mobile device
+        const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+        
         if (!isLanded) {
-            if (newY <= 0) {
+            // On desktop, stop at floor
+            if (!isMobile && newY <= 0) {
                 newY = 0;
                 this.model.velocity = 0;
                 this.model.isPlayerJumping = false;
+            } else if (isMobile && newY < 70) {
+                // On mobile, floor is at 70px from bottom - trigger game over when hitting floor
+                // Only trigger if player was on a step before AND there are 8+ bricks
+                if (this.model.velocity < 0 && this.wasOnStep && stepCount >= 8) {
+                    newY = 70;
+                    this.triggerGameOver(gameOverCallback);
+                    return;
+                } else {
+                    // Prevent going below floor, but don't trigger game over at start or before 8 bricks
+                    newY = 70;
+                    this.model.velocity = 0;
+                    this.model.isPlayerJumping = false; // Reset jump when landing on floor
+                }
             } else {
                 this.model.velocity = newVelocity;
             }
@@ -184,44 +203,36 @@ export class PlayerController {
 
         this.model.position = { x: this.model.position.x, y: newY };
         this.view.updatePosition(this.model);
-
-        // Check if mobile device
-        const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
         
-        // On mobile: game over if player falls without landing on bricks (regardless of brick count)
-        if (isMobile) {
-            // Calculate visible game area (accounting for mobile controls and floor)
-            const visibleGameHeight = window.innerHeight - 120; // 120px for controls/floor area
-            const floorY = visibleGameHeight;
-            
-            // Game over if player falls below the visible game area (hits the floor)
-            if (newY > floorY) {
-                this.triggerGameOver(gameOverCallback);
-                return;
-            }
-            
-            if (!isLanded && this.model.velocity < -5 && this.currentStep === null && newY > 100) {
-                // Player is falling fast, not on any step, and below the top area
-                // Check if there's a step nearby that could catch them
-                let hasStepNearby = false;
+        // On mobile: game over if player falls without landing on bricks (only after 8 bricks)
+        if (isMobile && stepCount >= 8) {
+            // Only check for game over if:
+            // 1. Player was previously on a step (wasOnStep) - meaning they fell from a brick
+            // 2. Player is falling fast and not on any step
+            if (this.wasOnStep && !isLanded && this.model.velocity < -2 && this.currentStep === null && newY > 300) {
+                // Player was on a brick, fell off, and is falling fast
+                // Check if there's a step below that could catch them
+                let hasStepBelow = false;
                 const playerTopFromBottom = newY;
                 const playerTopFromTop = window.innerHeight - playerTopFromBottom;
                 
-                steps.forEach((step) => {
+                for (let i = 0; i < steps.length; i++) {
+                    const step = steps[i];
                     const stepTopFromTopVh = step.position.y;
                     const stepTopFromTopPx = (stepTopFromTopVh / 100) * window.innerHeight;
-                    // Check if step is below player and within reasonable distance
-                    if (stepTopFromTopPx > playerTopFromTop && stepTopFromTopPx < playerTopFromTop + 300) {
+                    // Check if step is below player and within catchable distance (400px)
+                    if (stepTopFromTopPx > playerTopFromTop && stepTopFromTopPx < playerTopFromTop + 400) {
                         const isHorizontallyAligned = this.model.position.x + 5 >= step.position.x &&
                                                     this.model.position.x <= step.position.x + step.dimensions.width;
                         if (isHorizontallyAligned) {
-                            hasStepNearby = true;
+                            hasStepBelow = true;
+                            break; // Found a step, no need to check more
                         }
                     }
-                });
+                }
                 
-                if (!hasStepNearby) {
-                    // Player fell without landing on bricks - game over on mobile
+                if (!hasStepBelow) {
+                    // Player fell from a brick without landing on another brick - game over on mobile
                     this.triggerGameOver(gameOverCallback);
                     return;
                 }

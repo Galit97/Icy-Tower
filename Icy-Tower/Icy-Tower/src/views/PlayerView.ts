@@ -79,7 +79,8 @@ export class PlayerView {
         if (this.element) {
             // Check if mobile device
             const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-            const floorBottom = isMobile ? '120px' : '0px'; // Floor is 120px from bottom on mobile
+            // Character floor at 70px from bottom on mobile (20px higher)
+            const floorBottom = isMobile ? '70px' : '0px';
             
             // Start continuous spinning (3 full rotations = 1080 degrees)
             this.element.style.animation = 'spinFall 2s ease-in forwards';

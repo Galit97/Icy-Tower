@@ -28,7 +28,10 @@ try {
         const base = import.meta.env.BASE_URL || '/';
         return `${base}images/${filename}`.replace('//', '/');
     };
-    const player = new Player(10, 0, getImagePath("character3.png"));
+    // Set initial player position - 200px above controllers on mobile, 0 on desktop
+    const isMobileDevice = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+    const initialY = isMobileDevice ? 260 : 0; // 200px above controllers (at bottom: 20px) = 220px from bottom
+    const player = new Player(10, initialY, getImagePath("character3.png"));
     const playerView = new PlayerView();
     const playerController = new PlayerController(player, playerView);
 
