@@ -1,13 +1,28 @@
-body {
+html, body {
   height: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
-  background-image: url("/images/bricks.png");
-  background-size: cover;
+  overflow: hidden;
+  background-color: #1a1a2e;
+  background-image: url("/images/character8.png");
+  background-size: 30vw auto;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: center center;
+}
+
+body {
+  background-image: url("/images/bricks.png"), url("/images/character8.png");
+  background-size: cover, 30vw auto;
+  background-repeat: no-repeat, no-repeat;
+  background-position: center, center;
   z-index: 0;
   font-family: 'Press Start 2P', cursive;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .player {
@@ -15,6 +30,12 @@ body {
   height: auto;
   z-index: 6;
   transform-origin: center center;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  pointer-events: auto;
+  touch-action: manipulation;
 }
 
 @keyframes spin {
@@ -93,6 +114,9 @@ body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  background-color: transparent;
+  min-height: 100vh;
+  min-width: 100vw;
 }
 
 button {

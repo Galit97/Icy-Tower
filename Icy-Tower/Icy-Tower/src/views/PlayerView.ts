@@ -15,26 +15,46 @@ export class PlayerView {
         playerElement.style.left = `${player.position.x}vw`;
         playerElement.style.width = "5vw";
         playerElement.classList.add("player");
+        
+        // Prevent mobile from treating image as a link
+        playerElement.draggable = false;
+        playerElement.setAttribute("draggable", "false");
+        playerElement.style.userSelect = "none";
+        playerElement.style.webkitUserSelect = "none";
+        (playerElement.style as any).webkitTouchCallout = "none";
+        playerElement.style.pointerEvents = "auto";
+        
         mainElement.appendChild(playerElement);
         this.element = playerElement;
 
         // Double click/tap for both desktop and mobile
         let lastTap = 0;
         
-        playerElement.addEventListener("dblclick", () => {
+        playerElement.addEventListener("dblclick", (e) => {
+            e.preventDefault();
             this.switchCharacter(player);
         });
 
         // Double tap for mobile
+        playerElement.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+        });
+        
         playerElement.addEventListener("touchend", (e) => {
+            e.preventDefault();
             const currentTime = new Date().getTime();
             const tapLength = currentTime - lastTap;
             if (tapLength < 300 && tapLength > 0) {
                 // Double tap detected
-                e.preventDefault();
                 this.switchCharacter(player);
             }
             lastTap = currentTime;
+        });
+        
+        // Prevent context menu on long press
+        playerElement.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+            return false;
         });
     }
 
@@ -74,22 +94,28 @@ export class PlayerView {
     }
 
     switchCharacter(player: Player) {
+        const getImagePath = (filename: string) => {
+            // Use base URL for proper path resolution in deployment
+            const base = import.meta.env.BASE_URL || '/';
+            return `${base}images/${filename}`.replace('//', '/');
+        };
+        
         let newImage: string;
         if (player.image.includes("character3.png")) {
-            newImage = "/images/character4.png";
+            newImage = getImagePath("character4.png");
         } else if (player.image.includes("character4.png")) {
-            newImage = "/images/character5.png";
+            newImage = getImagePath("character5.png");
         } else if (player.image.includes("character5.png")) {
-            newImage = "/images/character6.png";
+            newImage = getImagePath("character6.png");
         } else if (player.image.includes("character6.png")) {
-            newImage = "/images/character7.png";
+            newImage = getImagePath("character7.png");
         } else if (player.image.includes("character7.png")) {
-            newImage = "/images/character8.png";
+            newImage = getImagePath("character8.png");
         } else if (player.image.includes("character8.png")) {
-            newImage = "/images/character3.png";
+            newImage = getImagePath("character3.png");
         } else {
             // Default to character3 (for character1, character2, or any other)
-            newImage = "/images/character3.png";
+            newImage = getImagePath("character3.png");
         }
         player.image = newImage;
         this.updateImage(player);

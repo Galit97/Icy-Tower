@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Icy Tower</title>
   </head>
   <body>
@@ -20,5 +20,14 @@
       <button id="mobile-right">→</button>
     </div>
     <script type="module" src="./src/main.ts"></script>
+    <script>
+      // Error handling for mobile
+      window.addEventListener('error', (e) => {
+        console.error('Global error:', e.error);
+      });
+      window.addEventListener('unhandledrejection', (e) => {
+        console.error('Unhandled promise rejection:', e.reason);
+      });
+    </script>
   </body>
 </html>

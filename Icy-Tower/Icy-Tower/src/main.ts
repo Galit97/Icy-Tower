@@ -6,17 +6,29 @@ import { Step } from "./models/StepModel";
 import { StepView } from "./views/StepView";
 import { StepController } from "./controllers/StepController";
 
-document.addEventListener("DOMContentLoaded", () => {
-    const mainElement = document.querySelector("#game-container") as HTMLDivElement;
-    const pauseButton = document.getElementById("pause") as HTMLButtonElement;
-    const restartButton = document.getElementById("restart") as HTMLButtonElement;
+// Error handling wrapper
+try {
+    document.addEventListener("DOMContentLoaded", () => {
+        try {
+            const mainElement = document.querySelector("#game-container") as HTMLDivElement;
+            const pauseButton = document.getElementById("pause") as HTMLButtonElement;
+            const restartButton = document.getElementById("restart") as HTMLButtonElement;
 
-    if (!mainElement) {
-        console.error("Error: #game-container element not found.");
-        return;
-    }
+            if (!mainElement) {
+                console.error("Error: #game-container element not found.");
+                document.body.innerHTML = '<div style="padding: 20px; color: red;">Error: Game container not found</div>';
+                return;
+            }
 
-    const player = new Player(10, 0, "/images/character3.png");
+            if (!pauseButton || !restartButton) {
+                console.error("Error: Control buttons not found.");
+            }
+
+    const getImagePath = (filename: string) => {
+        const base = import.meta.env.BASE_URL || '/';
+        return `${base}images/${filename}`.replace('//', '/');
+    };
+    const player = new Player(10, 0, getImagePath("character3.png"));
     const playerView = new PlayerView();
     const playerController = new PlayerController(player, playerView);
 
@@ -197,8 +209,16 @@ document.addEventListener("DOMContentLoaded", () => {
         location.reload();
     });
 
-    const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-    const initialInterval = isMobile ? 1700 : 2000; // Smaller gap on mobile
-    stepInterval = setInterval(createStep, initialInterval);
-    gameLoop();
-});
+            const isMobile = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+            const initialInterval = isMobile ? 1700 : 2000; // Smaller gap on mobile
+            stepInterval = setInterval(createStep, initialInterval);
+            gameLoop();
+        } catch (error) {
+            console.error("Error initializing game:", error);
+            document.body.innerHTML = `<div style="padding: 20px; color: red; font-family: Arial;">Error loading game: ${error}</div>`;
+        }
+    });
+} catch (error) {
+    console.error("Fatal error:", error);
+    document.body.innerHTML = `<div style="padding: 20px; color: red; font-family: Arial;">Fatal error: ${error}</div>`;
+}
